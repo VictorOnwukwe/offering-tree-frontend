@@ -21,6 +21,7 @@ type TextfieldProps = {
   padding?: string | number;
   className?: string;
   placeholder?: string;
+  truncateError?: boolean;
 };
 
 const TextField = ({
@@ -36,6 +37,7 @@ const TextField = ({
   padding = "0.8em 1.2em",
   className,
   placeholder,
+  truncateError,
 }: TextfieldProps) => {
   const [message, setMessage] = useState(null);
 
@@ -84,10 +86,17 @@ const TextField = ({
       />
       {validator && message ? (
         <>
-          <div className={Style["TextField-error"]} data-descr={message}>
+          <div
+            className={`${Style["TextField-error"]}${
+              truncateError ? ` ${Style["truncated"]}` : ""
+            }`}
+            data-descr={message}
+          >
             {message}
           </div>
-          <div className={Style["TextField-errorTip"]}>{message}</div>
+          {truncateError ? (
+            <div className={Style["TextField-errorTip"]}>{message}</div>
+          ) : null}
         </>
       ) : infoText ? (
         <span className={Style["TextField-info"]}>{infoText}</span>

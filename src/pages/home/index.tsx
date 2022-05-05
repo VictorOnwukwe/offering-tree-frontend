@@ -116,6 +116,7 @@ const HomePage = () => {
                 for: "bonus amount",
                 rules: "numeric|min:0,num",
               }}
+              truncateError
               value={bonusAmount}
               onInput={handleInput(setBonusAmount)}
             />
@@ -128,6 +129,7 @@ const HomePage = () => {
                 for: "bonus start limit",
                 rules: `numeric|min:0,num|less-or-equal:${bonusEndLimit},bonus end limit`,
               }}
+              truncateError
               value={bonusStartLimit}
               onInput={handleInput(setBonusStartLimit)}
             />
@@ -140,6 +142,7 @@ const HomePage = () => {
                 for: "bonus end limit",
                 rules: `numeric|min:0,num|greater-or-equal:${bonusStartLimit},bonus start limit`,
               }}
+              truncateError
               value={bonusEndLimit}
               onInput={handleInput(setBonusEndLimit)}
             />
