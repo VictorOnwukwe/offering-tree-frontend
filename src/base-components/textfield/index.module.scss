@@ -1,0 +1,21 @@
+@import "../../shared/styles/colors";
+
+.TextField {
+  &-input {
+    width: 100%;
+    max-width: 100%;
+    border: 1px solid $color-brand
+  }
+  &-error {
+    color: $color-error;
+    font-size: 0.9em;
+  }
+  &-info {
+    color: $color-black;
+    font-size: 0.9em;
+  }
+  label {
+    display: inline-block;
+    margin-bottom: 0.5em;
+  }
+}
