@@ -13,6 +13,8 @@ import UtilStyles from "../../shared/styles/utilities.module.scss";
 import Button from "../../base-components/button";
 import { BUTTON_TYPE } from "../../shared/enums";
 import { rules, utils } from "../../shared";
+import { useAppDispatch } from "../../shared/hooks";
+import { validate } from "../../store/app/app.store";
 
 const validator = new SimpleReactValidator({
   validators: {
@@ -31,6 +33,7 @@ const HomePage = () => {
   const [result, setResult] = useState<number | null>(null);
   const [clientsCount, setClientsCount] = useState<number>(0);
   const [bonus, setBonus] = useState<number>(0);
+  const dispatch = useAppDispatch();
 
   const handleInput =
     (setter: SetStateAction<any>) => (val: number | string) => {
@@ -64,6 +67,8 @@ const HomePage = () => {
             setCalculating(false);
           }
         }, 2000);
+      } else {
+        dispatch(validate({ value: validator }));
       }
     },
     [basePayRate, bonusAmount, bonusStartLimit, bonusEndLimit]
@@ -129,6 +134,7 @@ const HomePage = () => {
                 for: "bonus start limit",
                 rules: `numeric|min:0,num|less-or-equal:${bonusEndLimit},bonus end limit`,
               }}
+              watchFields={["bonus end limit"]}
               truncateError
               value={bonusStartLimit}
               onInput={handleInput(setBonusStartLimit)}
@@ -142,6 +148,7 @@ const HomePage = () => {
                 for: "bonus end limit",
                 rules: `numeric|min:0,num|greater-or-equal:${bonusStartLimit},bonus start limit`,
               }}
+              watchFields={["bonus start limit"]}
               truncateError
               value={bonusEndLimit}
               onInput={handleInput(setBonusEndLimit)}
@@ -159,6 +166,7 @@ const HomePage = () => {
           <div
             className={`${Style["HomePage-resultDisplay"]} ${UtilStyles["mt-5"]}`}
           >
+            <h3>{payRateName}</h3>
             <p>
               Total Number Of Clients: <strong>{clientsCount}</strong>
             </p>

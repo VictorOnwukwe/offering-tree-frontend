@@ -1,3 +1,5 @@
+@import "../../shared//styles/colors";
+
 .HomePage {
   padding: 2em;
   display: flex;
@@ -14,5 +16,9 @@
     > * {
       margin: 0.5em;
     }
+  }
+  &-resultDisplay {
+    padding: 1.5em;
+    background-color: rgba($color-brand, 0.1);
   }
 }

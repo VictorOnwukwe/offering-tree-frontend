@@ -1,7 +1,11 @@
-import react, { useCallback, FormEvent, useState, useEffect } from "react";
+import { useCallback, FormEvent, useState, useEffect } from "react";
 import { TEXTFIELD_TYPE } from "../../shared/enums";
 import SimpleReactValidator from "simple-react-validator";
 import Style from "./index.module.scss";
+import { useSelector } from "react-redux";
+import { selectAppValidator } from "../../store/app/app.selectors";
+import { useAppDispatch } from "../../shared/hooks";
+import { validate } from "../../store/app/app.store";
 
 type ValidatorData = {
   for: string;
@@ -22,7 +26,10 @@ type TextfieldProps = {
   className?: string;
   placeholder?: string;
   truncateError?: boolean;
+  watchFields?: Array<string>;
 };
+
+const timeout = null;
 
 const TextField = ({
   inputType = TEXTFIELD_TYPE.TEXT,
@@ -38,14 +45,43 @@ const TextField = ({
   className,
   placeholder,
   truncateError,
+  watchFields,
 }: TextfieldProps) => {
   const [message, setMessage] = useState(null);
+  const appValidator = useSelector(selectAppValidator);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (validator) {
       validator.validator.message(validator.for, value, validator.rules);
     }
   }, []);
+
+  useEffect(() => {
+    if (validator) {
+      if (
+        appValidator.value === validator.validator &&
+        (!appValidator.for || appValidator.for.includes(validator.for))
+      ) {
+        showMessage();
+        setMessage(
+          validator &&
+            validator.validator.message(validator.for, value, validator.rules)
+        );
+      }
+    }
+  }, [appValidator]);
+
+  useEffect(() => {
+    if (watchFields && validator) {
+      dispatch(
+        validate({
+          for: [...watchFields, validator.for],
+          value: validator?.validator,
+        })
+      );
+    }
+  }, [value]);
 
   const showMessage = useCallback(() => {
     if (validator) validator.validator.showMessageFor(validator.for);
