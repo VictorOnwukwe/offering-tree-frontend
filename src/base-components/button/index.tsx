@@ -15,7 +15,7 @@ type ButtonProps = {
 const Button = ({
   children,
   onClick,
-  padding = "0.5em 1em",
+  padding = "0.8em 1.2em",
   backgroundColor,
   className,
   loading,
