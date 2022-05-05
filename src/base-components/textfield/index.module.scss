@@ -1,14 +1,41 @@
 @import "../../shared/styles/colors";
+@import "../../shared//styles/variables";
 
 .TextField {
+  position: relative;
   &-input {
     width: 100%;
     max-width: 100%;
-    border: 1px solid $color-brand
+    border: 1px solid $color-brand;
+    border-radius: $border-radius;
   }
   &-error {
     color: $color-error;
     font-size: 0.9em;
+    > div {
+      overflow: hidden;
+      white-space: nowrap;
+      width: calc(100%);
+      text-overflow: ellipsis;
+    }
+  }
+  &-error + &-errorTip {
+    display: none;
+    position: absolute;
+    left: 0;
+    min-width: 200px;
+    border-radius: $border-radius;
+    background-color: $color-error;
+    padding: 0.5em;
+    color: $color-white;
+    font-size: 14px;
+    z-index: 2;
+  }
+  &-error + &-errorTip:hover {
+    display: block;
+  }
+  &-error:hover + &-errorTip {
+    display: block;
   }
   &-info {
     color: $color-black;

@@ -33,7 +33,7 @@ const TextField = ({
   infoText,
   width = "100%",
   maxWidth = "100%",
-  padding = "0.5em 1em",
+  padding = "0.8em 1.2em",
   className,
   placeholder,
 }: TextfieldProps) => {
@@ -47,7 +47,7 @@ const TextField = ({
 
   const showMessage = useCallback(() => {
     if (validator) validator.validator.showMessageFor(validator.for);
-  }, []);
+  }, [validator]);
 
   const handleInput = useCallback((e: FormEvent<HTMLInputElement>): void => {
     onInput(e.currentTarget.value);
@@ -62,7 +62,7 @@ const TextField = ({
         );
       }
     },
-    [value]
+    [value, validator]
   );
 
   return (
@@ -75,7 +75,7 @@ const TextField = ({
         id="textfield"
         className={Style["TextField-input"]}
         name={name}
-        style={{ padding }}
+        style={{ padding, borderColor: message ? "var(--color-error)" : "" }}
         placeholder={placeholder}
         type={inputType}
         value={value}
@@ -83,7 +83,12 @@ const TextField = ({
         onInput={handleInput}
       />
       {validator && message ? (
-        <div className={Style["TextField-error"]}>{message}</div>
+        <>
+          <div className={Style["TextField-error"]} data-descr={message}>
+            {message}
+          </div>
+          <div className={Style["TextField-errorTip"]}>{message}</div>
+        </>
       ) : infoText ? (
         <span className={Style["TextField-info"]}>{infoText}</span>
       ) : null}
