@@ -1,7 +1,11 @@
-import react, { useCallback, FormEvent, useState, useEffect } from "react";
+import { useCallback, FormEvent, useState, useEffect } from "react";
 import { TEXTFIELD_TYPE } from "../../shared/enums";
 import SimpleReactValidator from "simple-react-validator";
 import Style from "./index.module.scss";
+import { useSelector } from "react-redux";
+import { selectAppValidator } from "../../store/app/app.selectors";
+import { useAppDispatch } from "../../shared/hooks";
+import { validate } from "../../store/app/app.store";
 
 type ValidatorData = {
   for: string;
@@ -21,7 +25,11 @@ type TextfieldProps = {
   padding?: string | number;
   className?: string;
   placeholder?: string;
+  truncateError?: boolean;
+  watchFields?: Array<string>;
 };
+
+const timeout = null;
 
 const TextField = ({
   inputType = TEXTFIELD_TYPE.TEXT,
@@ -33,11 +41,15 @@ const TextField = ({
   infoText,
   width = "100%",
   maxWidth = "100%",
-  padding = "0.5em 1em",
+  padding = "0.8em 1.2em",
   className,
   placeholder,
+  truncateError,
+  watchFields,
 }: TextfieldProps) => {
   const [message, setMessage] = useState(null);
+  const appValidator = useSelector(selectAppValidator);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (validator) {
@@ -45,9 +57,35 @@ const TextField = ({
     }
   }, []);
 
+  useEffect(() => {
+    if (validator) {
+      if (
+        appValidator.value === validator.validator &&
+        (!appValidator.for || appValidator.for.includes(validator.for))
+      ) {
+        showMessage();
+        setMessage(
+          validator &&
+            validator.validator.message(validator.for, value, validator.rules)
+        );
+      }
+    }
+  }, [appValidator]);
+
+  useEffect(() => {
+    if (watchFields && validator) {
+      dispatch(
+        validate({
+          for: [...watchFields, validator.for],
+          value: validator?.validator,
+        })
+      );
+    }
+  }, [value]);
+
   const showMessage = useCallback(() => {
     if (validator) validator.validator.showMessageFor(validator.for);
-  }, []);
+  }, [validator]);
 
   const handleInput = useCallback((e: FormEvent<HTMLInputElement>): void => {
     onInput(e.currentTarget.value);
@@ -62,7 +100,7 @@ const TextField = ({
         );
       }
     },
-    [value]
+    [value, validator]
   );
 
   return (
@@ -75,7 +113,7 @@ const TextField = ({
         id="textfield"
         className={Style["TextField-input"]}
         name={name}
-        style={{ padding }}
+        style={{ padding, borderColor: message ? "var(--color-error)" : "" }}
         placeholder={placeholder}
         type={inputType}
         value={value}
@@ -83,7 +121,19 @@ const TextField = ({
         onInput={handleInput}
       />
       {validator && message ? (
-        <div className={Style["TextField-error"]}>{message}</div>
+        <>
+          <div
+            className={`${Style["TextField-error"]}${
+              truncateError ? ` ${Style["truncated"]}` : ""
+            }`}
+            data-descr={message}
+          >
+            {message}
+          </div>
+          {truncateError ? (
+            <div className={Style["TextField-errorTip"]}>{message}</div>
+          ) : null}
+        </>
       ) : infoText ? (
         <span className={Style["TextField-info"]}>{infoText}</span>
       ) : null}
