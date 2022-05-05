@@ -1,0 +1,29 @@
+@import "../../shared/styles/colors";
+.Button {
+  background-color: $color-brand;
+  color: $color-white;
+  border: none;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
+  display: inline-flex;
+}
+.Button.loading::after {
+  content: "";
+  display: inline-block;
+  margin-left: 0.5em;
+  align-self: center;
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  border: 1px solid $color-white;
+  border-top-color: transparent;
+  animation: rotate 0.4s linear infinite;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
