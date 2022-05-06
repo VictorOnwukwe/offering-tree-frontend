@@ -29,7 +29,7 @@ type TextfieldProps = {
   watchFields?: Array<string>;
 };
 
-const timeout = null;
+let validationDebounce: ReturnType<typeof setTimeout> | null = null;
 
 const TextField = ({
   inputType = TEXTFIELD_TYPE.TEXT,
@@ -74,12 +74,15 @@ const TextField = ({
 
   useEffect(() => {
     if (watchFields && validator) {
-      dispatch(
-        validate({
-          for: [...watchFields, validator.for],
-          value: validator?.validator,
-        })
-      );
+      if (validationDebounce) clearTimeout(validationDebounce);
+      validationDebounce = setTimeout(() => {
+        dispatch(
+          validate({
+            for: [...watchFields, validator.for],
+            value: validator?.validator,
+          })
+        );
+      }, 500);
     }
   }, [value]);
 
